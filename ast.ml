@@ -1,5 +1,5 @@
 type typ = Int | Float | Char | String | Bool | Optional of typ
-         | Cls of string | Enum of string | Array of typ
+         | UserDef of string | Array of typ
 
 type op = Add | Sub | Mul | Div | Mod | Eq | Neq | Lt | Gt
         | Leq | Geq | And | Or | Orange | Crange
@@ -48,8 +48,8 @@ type func_defn = {
 
 type cls_defn = {
   name : string;
-  init : (string * typ) list * stmt list;
   fields : (string * typ * expr) list;
+  inits : ((string * typ) list * stmt list) list;
   methods : func_defn list;
 }
 
