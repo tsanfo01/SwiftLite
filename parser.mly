@@ -1,8 +1,8 @@
-/*Ocamlyacc parser for SwiftLite */
+/* Ocamlyacc parser for SwiftLite */
 
 %{
-  open Ast
-}%
+open Ast
+%}
 
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 %token COMMA SEMI PLUS MINUS TIMES DIV MOD
@@ -31,4 +31,13 @@
 %%
 
 program:
-  _ { 1 }
+  defns EOF { $1 }
+
+defns:
+    /* nothing */ { [] }
+  | defns fdefn { Func_defn($2)::$1 }
+  | defns cdefn { Cls_defn($2)::$1  }
+  | defns edefn { Enum_defn($2)::$1 }
+  | defns stmt  { Stmt($2)::$1      }
+
+
