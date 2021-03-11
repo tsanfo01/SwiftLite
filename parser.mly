@@ -100,12 +100,6 @@ typ:
   | ID                    { UserDef($1)  }
   | LBRACKET typ RBRACKET { Array($2)    }
 
-stmt_list:
-  /* nothing */ { [] }
-
-expr:
-  /* nothing */ { NoExpr }
-
 
 
 
