@@ -21,6 +21,8 @@ type expr =
 | Binop of expr * op * expr
 | Unop of uop * expr
 | Assign of string * expr
+| ArrAssign of string * int * expr
+| ArrAt of string * int
 | Call of string * expr list
 | Init of string * (string * typ) list
 | MethodCall of string * string * expr list
