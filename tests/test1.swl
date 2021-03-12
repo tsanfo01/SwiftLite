@@ -1,0 +1,41 @@
+// succ test 1
+
+var a:Int = 3;
+
+let b:Int = 5;
+
+var c:String = "hi";
+
+var d:Bool = true;
+
+var e:Bool = false;
+
+var f:Float = 3.14;
+
+var g:Char = 'a';
+
+var h:Int? = 1;
+
+var i:String? = nil;
+
+let a:Int = 3;
+let b:Int = 5;
+let c:Int = 3 + 5;
+let d:Int = 3 - 5;
+let e:Int = 3 * 5;
+let f:Float = 3 / 5;
+let g:Int = 3 % 5;
+let h:Bool = true;
+let i:Bool = false;
+let j:Bool = h && i;
+let k:Bool = h || i;
+let l:Bool = !h;
+3...5;
+3..<5;
+let m:Bool = 3 <= 5;
+let n:Bool = 3 >= 5;
+let o:Bool = 3 != 5;
+let p:Int = -3;
+
+
+

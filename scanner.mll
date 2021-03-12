@@ -1,13 +1,5 @@
-{ (* token defined just so that the scanner can be tested w/o the Parser *)
-type token = LPAREN | RPAREN | LBRACE | RBRACE | LBRACKET | RBRACKET
-| COMMA | SEMI | PLUS | MINUS | TIMES | DIV | MOD
-| EQ | NEQ | LT | LEQ | GT | GEQ | NOT | AND | OR | ASSIGN | ORANGE | CRANGE
-| LET | VAR | IN | IF | ELSE | FOR | WHILE | RETURN
-| INT | FLOAT | CHAR | STRING | BOOL | OPTIONAL | NIL | COLON
-| CLASS | INIT | SELF | FUNC | ARROW | ENUM | CASE
-| BOOLLIT of bool | INTLIT of int | FLOATLIT of string
-| CHARLIT of char | STRINGLIT of string | ID of string
-| EOF
+{
+  open Parser
 }
 let digit = ['0' - '9']
 let digits = digit+
@@ -27,7 +19,7 @@ rule token = parse
 | "+"      { PLUS }
 | "-"      { MINUS }
 | "*"      { TIMES }
-| "/"      { DIV }
+| "/"      { DIVIDE }
 | "%"      { MOD }
 | "=="     { EQ }
 | "!="     { NEQ }
@@ -57,9 +49,9 @@ rule token = parse
 | "?"      { OPTIONAL }
 | "nil"    { NIL }
 | ":"      { COLON }
+| "."       { DOT}
 | "class"  { CLASS }
 | "init"   { INIT }
-| "self"   { SELF }
 | "func"   { FUNC }
 | '-''>'   { ARROW }
 | "enum"   { ENUM }
@@ -67,7 +59,7 @@ rule token = parse
 | "true"   { BOOLLIT(true) }
 | "false"  { BOOLLIT(false) }
 | digits as lxm { INTLIT(int_of_string lxm) }
-| digits '.' digit* as lxm { FLOATLIT(lxm) }
+| digits '.' digits as lxm { FLOATLIT(float_of_string lxm) }
 | "'" (character as c) "'" { CHARLIT(c) }
 | '"' (character+ as s) '"' { STRINGLIT(s) }
 | ['a'-'z' 'A'-'Z' ] character* as lxm { ID(lxm) }

@@ -1,0 +1,7 @@
+class Animal {
+    var a;
+    var b;
+    func rand (a, b) {
+        return a + b;
+    }
+}
