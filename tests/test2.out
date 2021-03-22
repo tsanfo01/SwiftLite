@@ -1,0 +1,36 @@
+var a: Int = 3;
+let b: Int = 5;
+if a < b {
+a = 4;
+}
+if a > b {
+a = 6;
+}else {
+a = 7;
+}
+var arr: [Int] = [0, 0, 0, 0, 0];
+for i in 0 ... 4 {
+arr[i] = 1;
+}
+while a < 5{
+a = a + 1;
+}
+if 1 < 5 {
+3 + 5;
+}else {
+if 3 > 5 {
+3 + 8;
+}else {
+if 2 < 5 {
+3 + 11;
+}else {
+4 + 6;
+}
+}
+}
+var name: String? = nil;
+if let unwrapped: Int = name{
+print(unwrapped);
+} else {
+name = "yoda";
+}

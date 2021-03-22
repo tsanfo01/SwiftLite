@@ -52,7 +52,6 @@ rule token = parse
 | "."      { DOT }
 | "class"  { CLASS }
 | "init"   { INIT }
-| "self"   { SELF }
 | "func"   { FUNC }
 | '-''>'   { ARROW }
 | "enum"   { ENUM }
@@ -60,7 +59,7 @@ rule token = parse
 | "true"   { BOOLLIT(true) }
 | "false"  { BOOLLIT(false) }
 | digits as lxm { INTLIT(int_of_string lxm) }
-| digits '.' digit* as lxm { FLOATLIT(float_of_string lxm) }
+| digits '.' digits as lxm { FLOATLIT(float_of_string lxm) }
 | "'" (character as c) "'" { CHARLIT(c) }
 | '"' (character+ as s) '"' { STRINGLIT(s) }
 | ['a'-'z' 'A'-'Z' ] character* as lxm { ID(lxm) }

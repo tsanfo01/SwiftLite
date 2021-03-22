@@ -1,0 +1,12 @@
+class Fruit {
+var apple: Int = 5;
+var banana: Int = 3;init(banana: Int, apple: Int) {
+banana = self.banana;
+apple = self.apple;
+}
+func count(apple: Int, banana: Int) -> String{
+return apple + banana;
+}
+}
+var fruitPlate: Fruit = Fruit(9, 8);
+fruitPlate.count(12, 10);

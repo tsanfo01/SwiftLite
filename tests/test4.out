@@ -1,0 +1,6 @@
+enum Animal{
+case Dawg;
+case Cat;
+case Bird
+}
+var a: Animal = Animal.Dawg;

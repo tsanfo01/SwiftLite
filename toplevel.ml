@@ -1,4 +1,3 @@
-(* Driver *)
 
 let () =
     let usage_msg = "usage: ./toplevel.native [file.swl]" in
