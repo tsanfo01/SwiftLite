@@ -9,7 +9,8 @@ open Ast
 %token EQ NEQ LT LEQ GT GEQ NOT AND OR ASSIGN ORANGE CRANGE
 %token LET VAR IN IF ELSE FOR WHILE RETURN 
 %token INT FLOAT CHAR STRING BOOL OPTIONAL NIL COLON DOT
-%token CLASS INIT FUNC ARROW ENUM CASE
+%token CLASS INIT SELF FUNC ARROW ENUM CASE
+
 %token <bool> BOOLLIT
 %token <int> INTLIT
 %token <char> CHARLIT
@@ -20,9 +21,10 @@ open Ast
 %start program
 %type <Ast.program> program
 
-%nonassoc NOELSE GET
-%nonassoc ELSE
+%nonassoc NOELSE LBRACKET
+%nonassoc ELSE LPAREN
 %right ASSIGN
+%right DOT
 %left OR
 %left AND
 %left EQ NEQ
@@ -175,12 +177,15 @@ expr:
   | expr CRANGE expr { Binop($1, Crange, $3)  }
   | MINUS expr %prec NOT { Unop(Neg, $2)      }
   | NOT expr         { Unop(Not, $2)          }
+  | LPAREN expr RPAREN { $2 }
   | ID ASSIGN expr   { Assign($1, $3)         }
-  | ID LBRACKET expr RBRACKET {ArrAt($1,$3)}
-  | ID LBRACKET expr RBRACKET ASSIGN expr {ArrAssign($1,$3,$6)}
+  | expr LBRACKET expr RBRACKET {ArrAt($1,$3)}
+  | expr LBRACKET expr RBRACKET ASSIGN expr {ArrAssign($1,$3,$6)}
   | ID LPAREN expr_list_opt RPAREN {Call($1,$3)}
   | ID DOT ID LPAREN expr_list_opt RPAREN {MethodCall($1,$3,$5)}
-  | ID DOT ID {EnumCase($1,$3)}
-
-
+  | ID DOT ID  {EnumCase($1,$3)}
+  | SELF    { Self }
+  | SELF DOT ID { SelfField($3) }
+  | SELF DOT ID LPAREN expr_list_opt RPAREN { SelfCall($3, $5) }
+  | SELF DOT ID ASSIGN expr { SelfAssign($3, $5) }
 

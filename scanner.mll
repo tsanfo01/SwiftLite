@@ -1,5 +1,5 @@
 {
-  open Parser
+open Parser
 }
 let digit = ['0' - '9']
 let digits = digit+
@@ -7,7 +7,8 @@ let character = ['a'-'z' 'A'-'Z' '0'-'9' '_']
 
 rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf }
-| "//"     { comment lexbuf }
+| "//"     { inlineComment lexbuf }
+| "/*"     { blockComment lexbuf }
 | "("      { LPAREN }
 | ")"      { RPAREN }
 | "{"      { LBRACE }
@@ -49,7 +50,7 @@ rule token = parse
 | "?"      { OPTIONAL }
 | "nil"    { NIL }
 | ":"      { COLON }
-| "."       { DOT}
+| "."      { DOT }
 | "class"  { CLASS }
 | "init"   { INIT }
 | "func"   { FUNC }
@@ -66,7 +67,10 @@ rule token = parse
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
 
-and comment = parse
+and inlineComment = parse
   '\n' { token lexbuf }
-| _    { comment lexbuf }
+| _    { inlineComment lexbuf }
 
+and blockComment = parse
+  "*/" { token lexbuf }
+| _    { blockComment lexbuf }

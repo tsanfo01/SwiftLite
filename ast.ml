@@ -21,11 +21,15 @@ type expr =
 | Binop of expr * op * expr
 | Unop of uop * expr
 | Assign of string * expr
-| ArrAssign of string * expr * expr
-| ArrAt of string * expr
+| ArrAssign of expr * expr * expr
+| ArrAt of expr * expr
 | Call of string * expr list
 | MethodCall of string * string * expr list
 | EnumCase of string * string
+| Self
+| SelfField of string
+| SelfCall of string * expr list
+| SelfAssign of string * expr
 | NoExpr
 
 type stmt =
@@ -99,11 +103,15 @@ let rec string_of_expr = function
   | Binop(e1, o, e2) -> string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(o, e) -> string_of_uop o ^ " " ^ string_of_expr e
   | Assign(s, e) -> s ^ " = " ^ string_of_expr e
-  | ArrAssign(s, i, e2) -> s ^ "[" ^ string_of_expr i ^ "] = " ^ string_of_expr e2
-  | ArrAt(s, i) -> s ^ "[" ^ string_of_expr i ^ "]"
+  | ArrAssign(s, i, e2) -> string_of_expr s ^ "[" ^ string_of_expr i ^ "] = " ^ string_of_expr e2
+  | ArrAt(s, i) -> string_of_expr s ^ "[" ^ string_of_expr i ^ "]"
   | Call(s, el) -> s ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | MethodCall(s1, s2, el) -> s1 ^ "." ^ string_of_expr (Call(s2, el))
   | EnumCase(s1, s2) -> s1 ^ "." ^ s2
+  | Self -> "self"
+  | SelfField(s) -> "self." ^ s
+  | SelfCall(s, es) -> "self." ^ s ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
+  | SelfAssign(s, e) -> "self." ^ s ^ " = " ^ string_of_expr e
   | NoExpr -> ""
 
 let rec string_of_type = function
