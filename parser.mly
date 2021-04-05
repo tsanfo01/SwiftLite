@@ -48,7 +48,7 @@ defns:
 
 fdefn:
   FUNC ID LPAREN args_opt RPAREN ARROW typ LBRACE stmt_list RBRACE {
-    { fname = $2; args = List.rev $4; ty = $7; body = List.rev $9 }
+    { fname = $2; params = List.rev $4; ty = $7; body = List.rev $9 }
   }
 
 cdefn:

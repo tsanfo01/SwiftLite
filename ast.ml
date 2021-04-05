@@ -45,7 +45,7 @@ and block = stmt list
 
 type func_defn = {
   fname : string;
-  args : (string * typ) list;
+  params : (string * typ) list;
   ty : typ;
   body : stmt list;
 }
@@ -141,7 +141,7 @@ let string_of_arg = function
     (s, t) -> s ^ ": " ^ string_of_type t
 
 let string_of_func f =
-  "func " ^ f.fname ^ "(" ^ String.concat ", " (List.map string_of_arg f.args) ^ ") -> " ^ string_of_type f.ty ^ "{\n"
+  "func " ^ f.fname ^ "(" ^ String.concat ", " (List.map string_of_arg f.params) ^ ") -> " ^ string_of_type f.ty ^ "{\n"
   ^ String.concat "\n" (List.map string_of_stmt f.body) ^ "\n}"
 
 let string_of_init = function
