@@ -1,0 +1,7 @@
+class x {
+    init () {}
+    func z() -> Int { return 0; }
+}
+
+var y : x = x();
+y.z();

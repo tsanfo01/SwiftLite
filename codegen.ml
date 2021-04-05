@@ -15,12 +15,6 @@ let translate defns =
   (*and array_t    = L.array_type *)
 
   and the_module = L.create_module context "SwiftLite" in
-(*
-  let add_terminal builder instr =
-                           (* The current block where we're inserting instr *)
-      match L.block_terminator (L.insertion_block builder) with
-	Some _ -> ()
-      | None -> ignore (instr builder) in *)
 
 (* Convert SwiftLite types to LLtype *)
    (*let ltype_of_typ = function
@@ -37,10 +31,11 @@ let translate defns =
   let print_t : L.lltype = 
     L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let print_func : L.llvalue = 
-    L.declare_function "print" print_t the_module in
+    L.declare_function "printf" print_t the_module in
 
-  let toplevel = L.define_function "main" i32_t the_module in
+  let toplevel = L.define_function "main" (L.function_type i32_t [||]) the_module in
   let builder = L.builder_at_end context (L.entry_block toplevel) in
+  let string_format_string = L.build_global_stringptr "%s\n" "fmt" builder in
 
   let build_defn = function
     SStmt(s) ->
@@ -56,7 +51,7 @@ let translate defns =
       let rec expr builder ((_, e) : sexpr) = match e with
         SLiteral(l) -> literal builder l
       | SCall("print", [e]) -> 
-          L.build_call print_func [| (expr builder e) |] "print" builder
+          L.build_call print_func [| string_format_string; (expr builder e) |] "printf" builder
       | _ -> raise ToDo in
       
 
