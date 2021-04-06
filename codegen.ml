@@ -37,7 +37,7 @@ let translate defns =
   let builder = L.builder_at_end context (L.entry_block toplevel) in
   let string_format_string = L.build_global_stringptr "%s\n" "fmt" builder in
 
-  let build_defn = function
+  let build_defn builder = function
     SStmt(s) ->
       let literal builder = function
         SIntLit i -> L.const_int i32_t i
@@ -59,8 +59,8 @@ let translate defns =
             (* Generate code for this expression, return resulting builder *)
             SExpr e -> let _ = expr builder e in builder 
       in
-      ignore (stmt builder s)
+      stmt builder s
  
-  in List.iter build_defn defns;
-  ignore ((L.build_ret (L.const_int i32_t 0)) (L.builder_at_end context (L.entry_block toplevel)));
+  in let builder = List.fold_left build_defn builder defns in
+  ignore ((L.build_ret (L.const_int i32_t 0)) builder);
   the_module
