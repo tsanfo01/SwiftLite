@@ -1,6 +1,16 @@
 import os
 import subprocess
 
+# Path to the LLVM interpreter
+LLI = "lli"
+#LLI="/usr/local/opt/llvm/bin/lli"
+
+# Path to the LLVM compiler
+LLC = "llc"
+
+# Path to the C compiler
+CC = "cc"
+
 succ_tests = [
     "test1",
     "test2",
@@ -17,10 +27,17 @@ fail_tests = [
     "test10",
 ]
 
+compile_tests = [
+    "testprint",
+]
+
 def test (tests, command, ext):
     print("\n")
     for test in tests:
-        process = subprocess.run([command, "tests/" + test + ".swl"], stdout=subprocess.PIPE, text=True, stderr=subprocess.STDOUT)
+        os.system(command + " tests/" + test + ".swl > " + test + ".ll")
+        os.system(LLC + " --relocation-model=pic " + test + ".ll > " + test + ".s")
+        os.system(CC +  " -o " + test + ".exe " + test + ".s")
+        process = subprocess.run(["./" + test + ".exe"], stdout=subprocess.PIPE, text=True)
         output = process.stdout
         path = "tests/" + test + ext
         expected_output = open(path,"r").read()
@@ -28,10 +45,7 @@ def test (tests, command, ext):
             print("Running tests: " + test + "...OK")
         else:
             print("Running tests: " + test + "...FAILED")
+        os.system("rm " + test + ".*")
 
-  
-        
-os.system("ocamlbuild -use-ocamlfind toplevel.native")
 
-test(succ_tests, "./toplevel.native", ".out")
-test(fail_tests, "./toplevel.native", ".err")
+test(compile_tests, "./toplevel.native", ".out")

@@ -1,19 +1,17 @@
 # SwiftLite
-* Group member:
+* Group members:
 - Erica Zhang (ericazyzhang@gmail.com)
-- Tim Sanford ()
+- Tim Sanford (tim.sanford23@gmail.com)
 
-* To compile and execute:
-SwiftLite Scanner/Parser can be compiled by running:
-ocamlbuild -use-ocamlfind toplevel.native
+* This implementation of compiler can handle a simple program written in Swift Lite, it can currently print string literals. The string literals cannot have spaces in between (user can use underscore to replace spaces).
 
-SwiftLite Scanner/Parser can be run with an input .swl file by running:
-./toplevel.native [file].swl
+* The test script is written in python 3.7.
+
+* To build the compiler:
+make toplevel.native
 
 * To run test script:
-Python script.py
+python3.7 script.py OR make test
 
-* Syntax needed to add to compiler:
-- Block comments;
-- Get rid of semicolons at the end of statements and expressions;
-- Repeat .. while
+* Validation:
+The test script compares output in the terminal by running test file testprint.swl and the expected output, if there is no difference, then the program prints OK in the terminal.
