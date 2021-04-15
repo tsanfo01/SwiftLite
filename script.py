@@ -11,7 +11,7 @@ LLC = "llc"
 # Path to the C compiler
 CC = "cc"
 
-succ_tests = [
+ast_succ_tests = [
     "test1",
     "test2",
     "test3",
@@ -19,7 +19,7 @@ succ_tests = [
     "test5",
 ]
 
-fail_tests = [
+ast_fail_tests = [
     "test6",
     "test7",
     "test8",
@@ -27,11 +27,35 @@ fail_tests = [
     "test10",
 ]
 
-compile_tests = [
+compile_succ_tests = [
     "testprint",
+    "testvar",
+    "testassign",
+    "testlet",
 ]
 
-def test (tests, command, ext):
+compile_fail_tests = [
+    "failvar1",
+    "failvar2",
+    "failassign1",
+    "failassign2",
+]
+
+command = "./toplevel.native"
+
+def testFail(tests):
+    print("\n")
+    for test in tests:
+        process = subprocess.run([command, "tests/" + test + ".swl"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        output = process.stdout
+        path = "tests/" + test + ".err"
+        expected_output = open(path,"r").read()
+        if output == expected_output: 
+            print("Running tests: " + test + "...OK")
+        else:
+            print("Running tests: " + test + "...FAILED")
+
+def testCompile (tests):
     print("\n")
     for test in tests:
         os.system(command + " tests/" + test + ".swl > " + test + ".ll")
@@ -39,7 +63,7 @@ def test (tests, command, ext):
         os.system(CC +  " -o " + test + ".exe " + test + ".s")
         process = subprocess.run(["./" + test + ".exe"], stdout=subprocess.PIPE, text=True)
         output = process.stdout
-        path = "tests/" + test + ext
+        path = "tests/" + test + ".out"
         expected_output = open(path,"r").read()
         if output == expected_output: 
             print("Running tests: " + test + "...OK")
@@ -48,4 +72,5 @@ def test (tests, command, ext):
         os.system("rm " + test + ".*")
 
 
-test(compile_tests, "./toplevel.native", ".out")
+testCompile(compile_succ_tests)
+testFail(compile_fail_tests)

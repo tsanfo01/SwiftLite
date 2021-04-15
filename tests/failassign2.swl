@@ -1,0 +1,2 @@
+let x : String = "Hello_World";
+x = "Not_Hello_World";

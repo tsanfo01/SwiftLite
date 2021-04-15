@@ -1,5 +1,5 @@
 type typ = Int | Float | Char | String | Bool | Optional of typ
-         | UserDef of string | Array of typ
+         | UserDef of string | Array of typ | Any
 
 type op = Add | Sub | Mul | Div | Mod | Eq | Neq | Lt | Gt
         | Leq | Geq | And | Or | Orange | Crange
