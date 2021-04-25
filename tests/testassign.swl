@@ -1,4 +1,0 @@
-var x : String = "Not_Hello_World";
-print(x);
-x = "Hello_World";
-print(x);

@@ -1,0 +1,12 @@
+func foo(x : String, arr : [Int]) -> String {
+    var i : Int = 0;
+    while i < 5 {
+        printi(arr[i]);
+        i = i + 1;
+    }
+    return x;
+}
+
+if true {
+    print(foo("Last", [1, 2, 3, 4, 5] : Int));
+}

@@ -1,0 +1,5 @@
+if true {
+    var x : Int = 3;
+    x[5] = 3;
+
+}

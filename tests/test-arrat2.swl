@@ -1,0 +1,6 @@
+var x : Int = 0;
+var y : [Int] = [1, 2, 3, 4, 5] : Int;
+while x < 5 {
+    printi(y[x]);
+    x = x + 1;
+}

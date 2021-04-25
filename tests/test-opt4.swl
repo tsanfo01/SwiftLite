@@ -1,0 +1,8 @@
+var x : Int? = nil : Int;
+
+if let y : Int = x {
+    printi(y);
+} else {
+    print("Good");
+}
+print("done");

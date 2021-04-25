@@ -1,0 +1,1 @@
+Fatal error: exception Failure("Cannot assign to index of an expression of type Int")

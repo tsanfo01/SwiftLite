@@ -1,0 +1,8 @@
+var x : Int? = (4)?;
+
+if let y : Int = x {
+    printi(y);
+} else {
+    print("Bad");
+}
+print("done");

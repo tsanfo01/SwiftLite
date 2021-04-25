@@ -1,0 +1,7 @@
+var x : Int = 4;
+
+func foo () -> Int {
+    return x;
+}
+
+printi(foo());

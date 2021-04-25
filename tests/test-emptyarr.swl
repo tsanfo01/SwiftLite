@@ -1,0 +1,13 @@
+if true {
+    var int : [Int] = [] : Int;
+    var char : [Char] = [] : Char;
+    var string : [String] = [] : String;
+
+    var i : Int = 0;
+    while i < 0 {
+        printi(int[i]);
+        printc(char[i]);
+        print(string[i]);
+    }
+    print("Checked!");
+}

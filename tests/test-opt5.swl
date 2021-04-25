@@ -1,0 +1,4 @@
+var x : Int? = (4)?;
+if let x : Int = x {
+    printi(x);
+} else {}

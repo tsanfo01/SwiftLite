@@ -1,0 +1,6 @@
+var x : [Int] = [1, 2, 3, 4, 5] : Int;
+printi(x[0]);
+printi(x[1]);
+printi(x[2]);
+printi(x[3]);
+printi(x[4]);
