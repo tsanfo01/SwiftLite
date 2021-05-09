@@ -2,6 +2,8 @@ open Ast
 
 exception ToDo
 
+module StringMap = Map.Make(String)
+
 type slit =
   SIntLit of int
 | SBoolLit of bool
@@ -22,6 +24,14 @@ and sx =
 | SArrAssign of sexpr * sexpr * sexpr
 | SCall of string * sexpr list
 | SOpt of sexpr
+| SEnumCase of string * string
+| SMethodCall of string * string * int * sexpr list
+| SInit of string * string * sexpr list
+| SSelf
+| SSelfCall of string * int * sexpr list
+| SSelfField of string * int
+| SSelfAssign of string * int * sexpr
+| SNoExpr
 
 type sstmt =
   SExpr of sexpr
@@ -41,9 +51,21 @@ type sfunc_defn = {
   sbody : sstmt list;
 }
 
-type sdefn = SStmt of sstmt | SFunc_defn of sfunc_defn
+type senum_defn = {
+  sename : string;
+  scases : string list;
+}
 
-type sprogram = sdefn list
+type scls_defn = {
+  scname : string;
+  sfields : (string * typ * sexpr) list;
+  sinits : ((string * typ) list * sstmt list) list;
+  smethods : sfunc_defn list;
+}
+
+type sdefn = SStmt of sstmt | SFunc_defn of sfunc_defn | SEnum_defn of senum_defn | SCls_defn of scls_defn
+
+type sprogram = sdefn list * string list * cls_defn list
 
 
 let rec string_of_sliteral = function
@@ -64,7 +86,15 @@ let rec string_of_sexpr (_, e) = match e with
 | SArrAt (a, i) -> string_of_sexpr a ^ "[" ^ string_of_sexpr i ^ "]"
 | SArrAssign (a, i, e) -> string_of_sexpr a ^ "[" ^ string_of_sexpr i ^ "] = " ^ string_of_sexpr e
 | SCall(f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
+| SMethodCall(s, s', _, es) -> s ^ "." ^ s' ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
 | SOpt(e) -> string_of_sexpr e ^ "?"
+| SEnumCase(s, s') -> s ^ "." ^ s'
+| SInit(s, _, es) -> s ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
+| SSelf -> "self"
+| SSelfField(s, _) -> "self." ^ s
+| SSelfCall(s, _, es) -> "self." ^ s ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
+| SSelfAssign(s, _, e) -> "self." ^ s ^ " = " ^ string_of_sexpr e
+| SNoExpr -> ""
 
 let rec string_of_sstmt = function
   SExpr(e) -> string_of_sexpr e ^ ";\n"
@@ -79,15 +109,27 @@ let rec string_of_sstmt = function
 | SWhile(p, b) -> "while " ^ string_of_sexpr p ^ "{\n" ^ String.concat "\n" (List.map string_of_sstmt b) ^ "\n}"
 | SFor(s, e, ls) -> "for " ^ s ^ " in " ^ string_of_sexpr e ^ " {\n" ^ String.concat "\n" (List.map string_of_sstmt ls) ^ "\n}"
 
+let string_of_sinit = function
+  (xs, ys) -> "init(" ^ String.concat ", " (List.map string_of_arg xs) ^ ") {\n" ^ String.concat "\n" (List.map string_of_sstmt ys) ^ "\n}"
 
 let string_of_sfunc f = 
   "func " ^ f.sfname ^ "(" ^ String.concat ", " (List.map string_of_arg f.sparams) ^ ") -> " ^ string_of_type f.sty ^ "{\n"
   ^ String.concat "\n" (List.map string_of_sstmt f.sbody) ^ "\n}"
 
+let string_of_senum e =
+  "enum " ^ e.sename ^ "{\n" ^ String.concat ";\n" (List.map (fun (s) -> "case " ^ s) e.scases) ^ "}\n"
+
+let string_of_scls c =
+  "class " ^ c.scname ^ " {\n" ^ String.concat "\n" (List.map (fun (s, t, e) -> string_of_sstmt (SVar (s, t, e))) c.sfields) ^
+  String.concat "\n" (List.map string_of_sinit c.sinits)^ "\n" ^ String.concat "\n" (List.map string_of_sfunc c.smethods) ^ "\n}"
+
+
 let string_of_sdefn = function
   SStmt(s) -> string_of_sstmt s
 | SFunc_defn(f) -> string_of_sfunc f
+| SEnum_defn e -> string_of_senum e
+| SCls_defn _ -> "class\n"
 
 
-let string_of_sprogram ds = 
+let string_of_sprogram (ds, _, _) = 
   String.concat "\n" (List.map string_of_sdefn ds) ^ "\n"

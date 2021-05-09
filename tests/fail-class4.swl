@@ -1,0 +1,5 @@
+class a {
+    var x: Int = 4;
+    var x : Int = 5;
+    init() {}
+}

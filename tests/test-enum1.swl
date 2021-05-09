@@ -1,0 +1,10 @@
+enum e {
+    case a;
+    case b;
+    case c;
+}
+
+var x : e = e.a;
+if x == e.a {
+    print("good");
+}

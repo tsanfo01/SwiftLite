@@ -1,0 +1,13 @@
+enum e {
+    case a;
+    case b;
+    case c;
+}
+
+func foo() -> e {
+    return e.c;
+}
+
+if foo() == e.c {
+    print("good");
+}

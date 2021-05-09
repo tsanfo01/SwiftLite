@@ -1,0 +1,90 @@
+func gcd(a : Int, b : Int) -> Int {
+    if (b == 0) {
+        return a;
+    }
+    var x : Int = a % b;
+    return gcd(b, x);
+}
+
+func lcm (a : Int, b : Int) -> Int {
+    printi(gcd(a, b));
+    return (a / gcd(a, b)) * b;
+}
+
+class Fraction {
+    var num : Int;
+    var den : Int;
+
+    init(num : Int, den : Int) {
+        self.num = den;
+        printi(num);
+        self.den = num;
+        printi(den);
+    }
+
+    func setNum(num : Int) -> Int {
+        self.num = num;
+        return 0;
+    }
+    func setDen(den : Int) -> Int {
+        self.den = den;
+        return 0;
+    }
+
+    func getNum() -> Int {
+        return self.num;
+    }
+    func getDen() -> Int {
+        return self.den;
+    }
+
+    func reduce() -> Fraction {
+        if num == 0 {
+            self.den = 1;
+        } else {
+            var tmp : Int = gcd(num, den);
+
+            self.num = num / tmp;
+            self.den = den / tmp;
+        }
+        return self;
+    }
+
+    func add(x : Fraction) -> Fraction {
+        printi(0);
+        var numx : Int = x.getNum();
+        var denx : Int = x.getDen();
+
+        printi(0);
+
+        var lcd : Int = lcm(den, denx);
+
+        printi(0);
+        printi(lcd);
+
+        var tmp : Int = ((lcd / den) * num) + ((lcd / denx) * numx);
+
+        num = tmp;
+        den = lcd;
+
+        return self.reduce();
+    }
+
+    func print() -> Int {
+        printi(num);
+        print("/");
+        printi(den);
+    }
+}
+
+var x : Fraction = Fraction(5, 3);
+
+
+x.add(Fraction(6, 4));
+x.print();
+
+printi(lcm(15, 20));
+
+
+
+

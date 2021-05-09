@@ -1,0 +1,6 @@
+class c {
+    init() {}
+    init(x : Int, y : String) {}
+    init(x : String) {}
+    init(a : Int, z : String) {}
+}

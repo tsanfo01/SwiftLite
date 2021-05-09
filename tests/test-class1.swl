@@ -1,0 +1,14 @@
+class a {
+    var x : Int = 0;
+    init() {}
+    func foo() -> Int {
+        return print("hello");
+    }
+    func bar() -> Int {
+        return print("world");
+    }
+}
+
+var x : a = a();
+x.foo();
+x.bar();

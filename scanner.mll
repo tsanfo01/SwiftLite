@@ -53,6 +53,7 @@ rule token = parse
 | "nil"    { NIL }
 | ":"      { COLON }
 | "."      { DOT }
+| "self"   { SELF }
 | "class"  { CLASS }
 | "init"   { INIT }
 | "func"   { FUNC }

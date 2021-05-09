@@ -1,0 +1,23 @@
+class a {
+    var x : String = "hello";
+    init() {}
+
+    func foo() -> String {
+        return x;
+    }
+}
+
+class b {
+    var x : String;
+    var y : a = a();
+    init(y : String) {
+        x = y;
+    }
+
+    func bar() -> String {
+        return y.foo() + " " + x;
+    }
+}
+
+var x : b = b("world");
+print(x.bar());

@@ -183,11 +183,11 @@ expr:
   | expr LBRACKET expr RBRACKET {ArrAt($1,$3)}
   | expr LBRACKET expr RBRACKET ASSIGN expr {ArrAssign($1,$3,$6)}
   | ID LPAREN expr_list_opt RPAREN {Call($1, $3)}
-  | ID DOT ID LPAREN expr_list_opt RPAREN {MethodCall($1,$3,$5)}
+  | ID DOT ID LPAREN expr_list_opt RPAREN {MethodCall($1,$3,List.rev $5)}
   | ID DOT ID  {EnumCase($1,$3)}
   | SELF    { Self }
   | SELF DOT ID { SelfField($3) }
-  | SELF DOT ID LPAREN expr_list_opt RPAREN { SelfCall($3, $5) }
+  | SELF DOT ID LPAREN expr_list_opt RPAREN { SelfCall($3, List.rev $5) }
   | SELF DOT ID ASSIGN expr { SelfAssign($3, $5) }
   | LPAREN expr RPAREN OPTIONAL { Opt($2) }
 
