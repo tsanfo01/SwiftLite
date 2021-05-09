@@ -1,0 +1,9 @@
+var i : Int = 3;
+
+while true {
+    i = i + 1;
+}
+
+while true {
+    foo; /* foo undefined */
+}

@@ -1,0 +1,9 @@
+var x : Int = 6;
+
+func foo (x : Bool) -> Bool {
+    printb(x);
+    return x;
+}
+
+printi(x);
+printb(foo(true));

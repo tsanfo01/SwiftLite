@@ -1,0 +1,7 @@
+class a {
+    var x : Int = 4;
+    init() {}
+    func foo() -> Int {
+        return "bad";
+    }
+}

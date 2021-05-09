@@ -1,0 +1,4 @@
+var x : String = "hello";
+var y : String = " world";
+
+print(x + y);

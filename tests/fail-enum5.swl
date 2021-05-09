@@ -1,0 +1,6 @@
+class e {
+    init() {}
+}
+enum e {
+    case a;
+}

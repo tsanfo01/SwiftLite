@@ -1,0 +1,16 @@
+class c {
+    var x : Int = 3;
+    var y : String;
+    init() {}
+    func bar() -> Int {
+        return self.x = 5;
+    }
+    func foo() -> Int {
+        return printi(self.x);
+    }
+}
+
+var x : c = c();
+x.foo();
+x.bar();
+x.foo();

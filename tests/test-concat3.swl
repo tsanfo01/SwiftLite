@@ -1,0 +1,3 @@
+var x : String = "hello" + " ";
+var y : String = x + "world";
+print(y);

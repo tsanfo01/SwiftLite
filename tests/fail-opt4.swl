@@ -1,0 +1,3 @@
+if let x : Int = nil : Int {
+    var x : Bool = true;
+} else {}

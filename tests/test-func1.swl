@@ -1,0 +1,6 @@
+func foo () -> Int {
+    print("Call");
+    return 0;
+}
+
+foo();

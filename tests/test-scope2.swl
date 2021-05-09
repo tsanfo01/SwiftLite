@@ -1,0 +1,10 @@
+var x : Int = 3;
+if true {
+    var y : Int = 4;
+    if false {
+
+    } else {
+        printi(y);
+        printi(x);
+    }
+}

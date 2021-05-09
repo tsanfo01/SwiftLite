@@ -1,5 +1,5 @@
 type typ = Int | Float | Char | String | Bool | Optional of typ
-         | UserDef of string | Array of typ | Any
+         | UserDef of string | Array of typ
 
 type op = Add | Sub | Mul | Div | Mod | Eq | Neq | Lt | Gt
         | Leq | Geq | And | Or | Orange | Crange
@@ -11,8 +11,8 @@ type lit =
 | CharLit of char
 | FloatLit of float
 | StringLit of string
-| ArrayLit of lit list
-| Nil
+| ArrayLit of typ * lit list
+| Nil of typ
 
 
 type expr =
@@ -30,6 +30,7 @@ type expr =
 | SelfField of string
 | SelfCall of string * expr list
 | SelfAssign of string * expr
+| Opt of expr
 | NoExpr
 
 type stmt =
@@ -67,6 +68,17 @@ type defn = Func_defn of func_defn | Cls_defn of cls_defn
 
 type program = defn list
 
+
+let rec string_of_type = function
+    Int -> "Int"
+  | Float -> "Float"
+  | Char -> "Char"
+  | String -> "String"
+  | Bool -> "Bool"
+  | Optional(t) -> string_of_type t ^ "?"
+  | UserDef(s) -> s
+  | Array(t) -> "[" ^ string_of_type t ^ "]"
+
 let string_of_op = function
     Add -> "+"
   | Sub -> "-"
@@ -94,8 +106,8 @@ let rec string_of_literal = function
   | CharLit(c) -> "'" ^ Char.escaped c ^ "'"
   | FloatLit(f) -> string_of_float f
   | StringLit(s) -> "\"" ^ s ^ "\""
-  | ArrayLit(ls) -> "[" ^ String.concat ", " (List.map string_of_literal ls) ^ "]"
-  | Nil -> "nil"
+  | ArrayLit(t, ls) -> string_of_type t ^ " [" ^ String.concat ", " (List.map string_of_literal ls) ^ "]"
+  | Nil(t) -> "nil : " ^ string_of_type t
 
 let rec string_of_expr = function
     Literal(l) -> string_of_literal(l)
@@ -112,17 +124,8 @@ let rec string_of_expr = function
   | SelfField(s) -> "self." ^ s
   | SelfCall(s, es) -> "self." ^ s ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
   | SelfAssign(s, e) -> "self." ^ s ^ " = " ^ string_of_expr e
+  | Opt(e) -> string_of_expr e ^ "?"
   | NoExpr -> ""
-
-let rec string_of_type = function
-    Int -> "Int"
-  | Float -> "Float"
-  | Char -> "Char"
-  | String -> "String"
-  | Bool -> "Bool"
-  | Optional(t) -> string_of_type t ^ "?"
-  | UserDef(s) -> s
-  | Array(t) -> "[" ^ string_of_type t ^ "]"
 
 let rec string_of_stmt = function
     Var(s, t, e) -> "var " ^ s ^ ": " ^ string_of_type t ^ " = " ^ string_of_expr e ^ ";"
@@ -138,7 +141,7 @@ let rec string_of_stmt = function
   | For(s, e, ls) -> "for " ^ s ^ " in " ^ string_of_expr e ^ " {\n" ^ String.concat "\n" (List.map string_of_stmt ls) ^ "\n}"
 
 let string_of_arg = function
-    (s, t) -> s ^ ": " ^ string_of_type t
+    (s, t) -> s ^ " : " ^ string_of_type t
 
 let string_of_func f =
   "func " ^ f.fname ^ "(" ^ String.concat ", " (List.map string_of_arg f.params) ^ ") -> " ^ string_of_type f.ty ^ "{\n"

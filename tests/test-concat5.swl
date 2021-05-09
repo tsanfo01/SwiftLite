@@ -1,0 +1,7 @@
+func foo(x : String) -> String {
+    return x + "world";
+}
+
+var x : String = "hello";
+
+print(foo(x + " "));

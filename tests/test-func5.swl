@@ -1,0 +1,9 @@
+func foo() -> Int {
+    return 5;
+}
+
+func bar() -> Int {
+    return foo();
+}
+
+printi(bar());

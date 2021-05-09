@@ -1,0 +1,7 @@
+enum e {
+    case a;
+}
+
+enum e {
+    case b;
+}

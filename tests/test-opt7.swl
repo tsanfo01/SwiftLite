@@ -1,0 +1,8 @@
+if let x : Int = nil : Int {
+    
+} else {
+    var x : String = "Good";
+    print(x);
+    x = "Very good";
+    print(x);
+}

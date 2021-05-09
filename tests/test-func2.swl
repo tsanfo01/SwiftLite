@@ -1,0 +1,5 @@
+func foo () -> Int {
+    return 1;
+}
+
+printi(foo());

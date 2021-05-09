@@ -33,6 +33,7 @@ open Ast
 %left TIMES DIVIDE MOD
 %right NOT
 
+
 %%
 
 program:
@@ -125,7 +126,7 @@ cond:
   | IF LET ID COLON typ ASSIGN expr LBRACE stmt_list RBRACE else_branch {IfLet($3,$5,$7, List.rev $9, List.rev $11)}
 
 else_branch:
-    ELSE LBRACE stmt_list RBRACE { List.rev $3 }
+    ELSE LBRACE stmt_list RBRACE { $3 }
   | ELSE cond { [$2] }
 
 expr_opt:
@@ -134,7 +135,7 @@ expr_opt:
 
 expr_list_opt:
     /* nothing */ { [] }
-  | expr_list     { $1 }
+  | expr_list     { List.rev $1 }
 
 expr_list:
     expr           { [$1]     }
@@ -146,8 +147,8 @@ literal:
   | CHARLIT                   { CharLit($1)          }
   | INTLIT                    { IntLit($1)           }
   | FLOATLIT                  { FloatLit($1)         }
-  | LBRACKET lit_opt RBRACKET { ArrayLit (List.rev $2) }
-  | NIL                       { Nil                  }
+  | LBRACKET lit_opt RBRACKET COLON typ { ArrayLit ($5, List.rev $2) }
+  | NIL COLON typ             { Nil($3)              }
 
 lit_opt:
     /* nothing */ { [] }
@@ -181,11 +182,12 @@ expr:
   | ID ASSIGN expr   { Assign($1, $3)         }
   | expr LBRACKET expr RBRACKET {ArrAt($1,$3)}
   | expr LBRACKET expr RBRACKET ASSIGN expr {ArrAssign($1,$3,$6)}
-  | ID LPAREN expr_list_opt RPAREN {Call($1,$3)}
-  | ID DOT ID LPAREN expr_list_opt RPAREN {MethodCall($1,$3,$5)}
+  | ID LPAREN expr_list_opt RPAREN {Call($1, $3)}
+  | ID DOT ID LPAREN expr_list_opt RPAREN {MethodCall($1,$3,List.rev $5)}
   | ID DOT ID  {EnumCase($1,$3)}
   | SELF    { Self }
   | SELF DOT ID { SelfField($3) }
-  | SELF DOT ID LPAREN expr_list_opt RPAREN { SelfCall($3, $5) }
+  | SELF DOT ID LPAREN expr_list_opt RPAREN { SelfCall($3, List.rev $5) }
   | SELF DOT ID ASSIGN expr { SelfAssign($3, $5) }
+  | LPAREN expr RPAREN OPTIONAL { Opt($2) }
 

@@ -1,0 +1,8 @@
+var x : Int = 5;
+func foo(x : Bool) -> Int {
+    var x : String = "s";
+    print(x);
+    return 1;
+}
+printi(x);
+printi(foo(false));

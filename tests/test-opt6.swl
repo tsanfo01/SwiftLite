@@ -1,0 +1,19 @@
+func positive (x : Int) -> Int? {
+    if x > 0 {
+        return (x)?;
+    } else {
+        return nil : Int;
+    }
+}
+
+if let x : Int = positive(5) {
+    printi(x);
+} else {
+    print("Bad");
+}
+
+if let x : Int = positive(-5) {
+    printi(x);
+} else {
+    print("Good");
+}

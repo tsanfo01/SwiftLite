@@ -1,0 +1,4 @@
+return 5;
+return "string";
+return 'z';
+return print("done");

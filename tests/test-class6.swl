@@ -1,0 +1,21 @@
+class c {
+    var x : Int;
+    init() {}
+    init(x : Int) { self.x = x; }
+    init(b : Bool) {
+        if b {
+            self.x = 1;
+        }
+    }
+    func foo() -> Int {
+        return self.x;
+    }
+}
+
+var x : c = c();
+var y : c = c(4);
+var z : c = c(true);
+
+printi(x.foo());
+printi(y.foo());
+printi(z.foo());

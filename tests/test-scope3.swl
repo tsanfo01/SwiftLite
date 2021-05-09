@@ -1,0 +1,10 @@
+var x : Int = 3;
+if true {
+    var x : Bool = true;
+    if x {
+        var x : Char = 'x';
+        printc(x);
+    }
+    printb(x);
+}
+printi(x);

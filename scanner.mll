@@ -4,6 +4,8 @@ open Parser
 let digit = ['0' - '9']
 let digits = digit+
 let character = ['a'-'z' 'A'-'Z' '0'-'9' '_']
+let strCharacter = [ ' ' '!' '#' - '~' ]
+
 
 rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf }
@@ -51,6 +53,7 @@ rule token = parse
 | "nil"    { NIL }
 | ":"      { COLON }
 | "."      { DOT }
+| "self"   { SELF }
 | "class"  { CLASS }
 | "init"   { INIT }
 | "func"   { FUNC }
@@ -61,8 +64,8 @@ rule token = parse
 | "false"  { BOOLLIT(false) }
 | digits as lxm { INTLIT(int_of_string lxm) }
 | digits '.' digits as lxm { FLOATLIT(float_of_string lxm) }
-| "'" (character as c) "'" { CHARLIT(c) }
-| '"' (character+ as s) '"' { STRINGLIT(s) }
+| "'" (_ as c) "'" { CHARLIT(c) }
+| '"' (strCharacter* as s) '"' { STRINGLIT(s) }
 | ['a'-'z' 'A'-'Z' ] character* as lxm { ID(lxm) }
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }

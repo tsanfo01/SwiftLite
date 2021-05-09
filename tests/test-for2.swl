@@ -1,0 +1,7 @@
+var x : [Char] = ['a', 'b', 'c', 'd', 'e'] : Char;
+var y : Int = 1;
+for i in x {
+    printi(y);
+    printc(i);
+    y = y + 1;
+}

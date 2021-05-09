@@ -1,7 +1,0 @@
-var name:String? = nil;
-
-if let unwrapped = name {
-   print(unwrapped);
-} else {
-    name = "yoda";
-}
