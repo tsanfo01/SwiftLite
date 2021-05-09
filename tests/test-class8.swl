@@ -7,7 +7,6 @@ func gcd(a : Int, b : Int) -> Int {
 }
 
 func lcm (a : Int, b : Int) -> Int {
-    printi(gcd(a, b));
     return (a / gcd(a, b)) * b;
 }
 
@@ -16,10 +15,8 @@ class Fraction {
     var den : Int;
 
     init(num : Int, den : Int) {
-        self.num = den;
-        printi(num);
-        self.den = num;
-        printi(den);
+        self.num = num;
+        self.den = den;
     }
 
     func setNum(num : Int) -> Int {
@@ -51,16 +48,10 @@ class Fraction {
     }
 
     func add(x : Fraction) -> Fraction {
-        printi(0);
         var numx : Int = x.getNum();
         var denx : Int = x.getDen();
 
-        printi(0);
-
         var lcd : Int = lcm(den, denx);
-
-        printi(0);
-        printi(lcd);
 
         var tmp : Int = ((lcd / den) * num) + ((lcd / denx) * numx);
 
@@ -80,10 +71,17 @@ class Fraction {
 var x : Fraction = Fraction(5, 3);
 
 
-x.add(Fraction(6, 4));
+x.add(Fraction(6, 3));
 x.print();
 
-printi(lcm(15, 20));
+
+
+
+
+
+
+
+
 
 
 
