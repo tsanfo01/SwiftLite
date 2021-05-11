@@ -19,7 +19,6 @@ let translate (defns, enums, classes) =
   and array_t t  = L.pointer_type (L.struct_type context [| i32_t ; L.pointer_type t |])
 
   and the_module = L.create_module context "SwiftLite" in
-  (*let get_cdefn s = List.find (fun c -> c.A.cname = s) classes in*)
 
 
 (* Convert SwiftLite types to LLtype *)
@@ -36,8 +35,9 @@ let translate (defns, enums, classes) =
 
   let class_structs =
     let build_named_struct map c =
-      let struct_t = L.named_struct_type context c.A.cname
-      in StringMap.add c.A.cname struct_t map in
+      let struct_t = L.named_struct_type context c.A.cname in
+      StringMap.add c.A.cname struct_t map
+    in
     List.fold_left build_named_struct StringMap.empty classes
   in
  
@@ -52,7 +52,7 @@ let translate (defns, enums, classes) =
         (Array.of_list (L.pointer_type struct_t :: (List.map (ltype_of_typ class_structs) 
           (List.map (fun (_, b) -> b) m.A.params)))))) methods in
     let () = L.struct_set_body struct_t (Array.of_list (ts' @ mts)) true in
-  StringMap.add c.A.cname struct_t map 
+    StringMap.add c.A.cname struct_t map 
   in
   let class_structs = List.fold_left build_struct StringMap.empty classes in
 
@@ -73,13 +73,15 @@ let translate (defns, enums, classes) =
     let rec findIn = function
         Global(map) -> StringMap.find s map
       | WithParent(p, map) -> try StringMap.find s map with Not_found -> findIn p
-    in findIn scope in
+    in findIn scope
+  in
 
   let add_terminal builder instr =
                            (* The current block where we're inserting instr *)
       match L.block_terminator (L.insertion_block builder) with
         Some _ -> ()
-      | None -> ignore (instr builder) in
+      | None -> ignore (instr builder)
+  in
 
 
   (* STRING CONCATENATION - it's a long function *)
@@ -528,8 +530,8 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
   | SFunc_defn(fdecl) ->
       let name = fdecl.sfname
       and formal_types = 
-            Array.of_list (List.map (fun (_, t) -> ltype_of_typ class_structs t) fdecl.sparams)
-      in let ftype = L.function_type (ltype_of_typ class_structs fdecl.sty) formal_types in
+            Array.of_list (List.map (fun (_, t) -> ltype_of_typ class_structs t) fdecl.sparams) in
+      let ftype = L.function_type (ltype_of_typ class_structs fdecl.sty) formal_types in
       let the_function = L.define_function name ftype the_module in
       let fbuilder = L.builder_at_end context (L.entry_block the_function) in
       let funcs' = StringMap.add name the_function funcs in
@@ -577,7 +579,9 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
           in let ftype = L.function_type (ltype_of_typ class_structs m.sty) formal_types in
           let the_function = L.define_function name ftype the_module in
           StringMap.add name the_function funcs
-      in List.fold_left add_method funcs methods in
+        in
+        List.fold_left add_method funcs methods
+      in
 
       let funcs' =
         let add_init funcs (i, (params, _)) =
@@ -587,7 +591,9 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
           let ftype = L.function_type selfTy formal_types in
           let the_function = L.define_function name ftype the_module in
           StringMap.add name the_function funcs
-        in List.fold_left add_init funcs' (List.mapi (fun i a -> (i, a)) inits) in
+        in
+        List.fold_left add_init funcs' (List.mapi (fun i a -> (i, a)) inits)
+      in
 
       let methods' = 
         let build_method m =
@@ -607,10 +613,13 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
             (("self", A.UserDef cname) :: m.sparams) (Array.to_list (L.params the_function)) in
 
           let fieldScope =
-            WithParent(scope, List.fold_left (fun map (i, n) ->
+            WithParent(scope,
+              List.fold_left
+              (fun map (i, n) ->
                 let self = L.build_load (StringMap.find "self" args) "self" fbuilder in
                 let f = L.build_struct_gep self i "f" fbuilder in
-                StringMap.add n f map) StringMap.empty fieldOffsets) in
+                StringMap.add n f map)
+              StringMap.empty fieldOffsets) in
 
 
 
@@ -625,7 +634,9 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
             | A.String -> L.build_ret (L.build_global_stringptr "" "ret" fbuilder)
             | A.Optional t -> L.build_ret (L.const_null (L.pointer_type (ltype_of_typ class_structs t)))
             | t -> L.build_ret (L.const_null (ltype_of_typ class_structs t))) in
-        the_function in List.map build_method methods
+          the_function
+        in
+        List.map build_method methods
       in
       let inits' =
         let build_init map (x, (params, body)) =
@@ -662,9 +673,12 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
           let _ = L.build_store obj self fbuilder in
 
           let fieldScope =
-            WithParent(scope, List.fold_left (fun map (i, n) ->
-                let f = L.build_struct_gep obj i "f" fbuilder in
-                StringMap.add n f map) StringMap.empty fieldOffsets) in
+            WithParent(scope,
+              List.fold_left
+                (fun map (i, n) ->
+                  let f = L.build_struct_gep obj i "f" fbuilder in
+                  StringMap.add n f map)
+              StringMap.empty fieldOffsets) in
 
           let selfScope = WithParent(fieldScope, StringMap.add "self" self StringMap.empty) in
 
@@ -674,9 +688,10 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
           let (fbuilder, _) = List.fold_left (fun (b, s) st -> stmt b s funcs enums classes the_function st)
             (fbuilder, formalScope) body in
           let _ =
-            add_terminal fbuilder (L.build_ret obj)in
+            add_terminal fbuilder (L.build_ret obj) in
           StringMap.add name the_function map
-        in List.fold_left build_init StringMap.empty (List.mapi (fun i a -> (i, a)) inits)
+        in
+        List.fold_left build_init StringMap.empty (List.mapi (fun i a -> (i, a)) inits)
       in
       (builder, scope, funcs, enums, StringMap.add cname (inits', methods') classes)
       
