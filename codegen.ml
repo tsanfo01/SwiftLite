@@ -35,7 +35,9 @@ let translate (defns, enums, classes) =
   in
 
   let class_structs =
-    let build_named_struct map c = let struct_t = L.named_struct_type context c.A.cname in StringMap.add c.A.cname struct_t map in
+    let build_named_struct map c =
+      let struct_t = L.named_struct_type context c.A.cname
+      in StringMap.add c.A.cname struct_t map in
     List.fold_left build_named_struct StringMap.empty classes
   in
  
@@ -45,7 +47,10 @@ let translate (defns, enums, classes) =
     let ts = List.map (fun (_, b, _) -> b) fields in
     let ts' = List.map (ltype_of_typ class_structs) ts in
     let methods = c.A.methods in
-    let mts = List.map (fun m -> L.pointer_type (L.function_type (ltype_of_typ class_structs m.A.ty) (Array.of_list (L.pointer_type struct_t :: (List.map (ltype_of_typ class_structs) (List.map (fun (_, b) -> b) m.A.params)))))) methods in
+    let mts = List.map (fun m -> 
+      L.pointer_type (L.function_type (ltype_of_typ class_structs m.A.ty) 
+        (Array.of_list (L.pointer_type struct_t :: (List.map (ltype_of_typ class_structs) 
+          (List.map (fun (_, b) -> b) m.A.params)))))) methods in
     let () = L.struct_set_body struct_t (Array.of_list (ts' @ mts)) true in
   StringMap.add c.A.cname struct_t map 
   in
@@ -98,7 +103,8 @@ let translate (defns, enums, classes) =
   let concat_len_gep = L.build_struct_gep concat_str 0 "len" concat_builder in
   let _ = L.build_store concat_len concat_len_gep concat_builder in
   let concat_arr_gep = L.build_struct_gep concat_str 1 "chars" concat_builder in
-  let concat_arr = L.build_array_malloc i8_t (L.build_add concat_len (L.const_int i32_t 1) "tmp" concat_builder) "arr" concat_builder in
+  let concat_arr = L.build_array_malloc i8_t
+    (L.build_add concat_len (L.const_int i32_t 1) "tmp" concat_builder) "arr" concat_builder in
 
   let concat_count = L.build_alloca i32_t "count" concat_builder in
   let _ = L.build_store (L.const_int i32_t 0) concat_count concat_builder in
@@ -113,11 +119,13 @@ let translate (defns, enums, classes) =
   let concat_at = L.build_gep concat_arr [| concat_count' |] "c" concat_body_builder in
   let concat_s1_at = L.build_gep concat_p1 [| concat_count' |] "c1" concat_body_builder in
   let _ = L.build_store (L.build_load concat_s1_at "tmp" concat_body_builder) concat_at concat_body_builder in
-  let _ = L.build_store (L.build_add concat_count' (L.const_int i32_t 1) "tmp" concat_body_builder) concat_count concat_body_builder in
+  let _ = L.build_store (L.build_add concat_count'
+    (L.const_int i32_t 1) "tmp" concat_body_builder) concat_count concat_body_builder in
   let () = add_terminal concat_body_builder (L.build_br concat_pred_bb1) in
 
   let concat_pred_builder1 = L.builder_at_end context concat_pred_bb1 in
-  let concat_check = L.build_icmp L.Icmp.Slt (L.build_load concat_count "comp" concat_pred_builder1) concat_l1 "check" concat_pred_builder1 in
+  let concat_check = L.build_icmp L.Icmp.Slt
+    (L.build_load concat_count "comp" concat_pred_builder1) concat_l1 "check" concat_pred_builder1 in
 
   let concat_merge_bb = L.append_block context "merge" concat_func in
   let _ = L.build_cond_br concat_check concat_body_bb concat_merge_bb concat_pred_builder1 in
@@ -136,13 +144,17 @@ let translate (defns, enums, classes) =
   let concat_count'''' = L.build_load concat_count'' "count" concat_body_builder' in
   let concat_at' = L.build_gep concat_arr [| concat_count''' |] "c" concat_body_builder' in
   let concat_s1_at' = L.build_gep concat_p2 [| concat_count'''' |] "c1" concat_body_builder' in
-  let _ = L.build_store (L.build_load concat_s1_at' "tmp" concat_body_builder') concat_at' concat_body_builder' in
-  let _ = L.build_store (L.build_add concat_count''' (L.const_int i32_t 1) "tmp" concat_body_builder') concat_count concat_body_builder' in
-  let _ = L.build_store (L.build_add concat_count'''' (L.const_int i32_t 1) "tmp" concat_body_builder') concat_count'' concat_body_builder' in
+  let _ = L.build_store (L.build_load concat_s1_at' "tmp" concat_body_builder')
+    concat_at' concat_body_builder' in
+  let _ = L.build_store (L.build_add concat_count''' (L.const_int i32_t 1) "tmp" concat_body_builder')
+    concat_count concat_body_builder' in
+  let _ = L.build_store (L.build_add concat_count'''' (L.const_int i32_t 1) "tmp" concat_body_builder')
+    concat_count'' concat_body_builder' in
   let () = add_terminal concat_body_builder' (L.build_br concat_pred_bb2) in
 
   let concat_pred_builder2 = L.builder_at_end context concat_pred_bb2 in
-  let concat_check' = L.build_icmp L.Icmp.Slt (L.build_load concat_count'' "comp" concat_pred_builder2) concat_l2 "check" concat_pred_builder2 in
+  let concat_check' = L.build_icmp L.Icmp.Slt
+    (L.build_load concat_count'' "comp" concat_pred_builder2) concat_l2 "check" concat_pred_builder2 in
 
   let concat_merge_bb' = L.append_block context "merge" concat_func in
   let _ = L.build_cond_br concat_check' concat_body_bb' concat_merge_bb' concat_pred_builder2 in
@@ -167,7 +179,8 @@ let translate (defns, enums, classes) =
   let range_i = (Array.get range_params 0) in
   let range_j = (Array.get range_params 1) in
 
-    let range_len = L.build_add (L.build_sub range_j range_i "tmp" range_builder) (L.const_int i32_t 1) "tmp" range_builder in
+    let range_len = L.build_add (L.build_sub range_j range_i "tmp" range_builder)
+      (L.const_int i32_t 1) "tmp" range_builder in
     let range_arr = L.build_array_malloc i32_t range_len "tmp" range_builder in
     let range_x = L.build_alloca i32_t "tmp" range_builder in
     let range_index = L.build_alloca i32_t "tmp" range_builder in
@@ -183,12 +196,15 @@ let translate (defns, enums, classes) =
     let range_x' = L.build_load range_x "x" range_body_builder in
     let range_gep = L.build_gep range_arr [| range_index' |] "tmp" range_body_builder in
     let _ = L.build_store range_x' range_gep range_body_builder in
-    let _ = L.build_store (L.build_add range_x' (L.const_int i32_t 1) "tmp" range_body_builder) range_x range_body_builder in
-    let _ = L.build_store (L.build_add range_index' (L.const_int i32_t 1) "tmp" range_body_builder) range_index range_body_builder in
+    let _ = L.build_store (L.build_add range_x' (L.const_int i32_t 1) "tmp" range_body_builder)
+      range_x range_body_builder in
+    let _ = L.build_store (L.build_add range_index' (L.const_int i32_t 1) "tmp" range_body_builder)
+      range_index range_body_builder in
     let () = add_terminal range_body_builder (L.build_br range_pred_bb) in
 
     let range_pred_builder = L.builder_at_end context range_pred_bb in
-    let range_pred = L.build_icmp L.Icmp.Slt (L.build_load range_index "i" range_pred_builder) range_len "tmp" range_pred_builder in
+    let range_pred = L.build_icmp L.Icmp.Slt (L.build_load range_index "i" range_pred_builder)
+      range_len "tmp" range_pred_builder in
 
     let range_merge_bb = L.append_block context "merge" range_func in
     let _ = L.build_cond_br range_pred range_body_bb range_merge_bb range_pred_builder in
@@ -343,7 +359,7 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
   | SInit(s, s', es) -> 
       let (inits, _) = StringMap.find s classes in
       let init = StringMap.find s' inits in
-      let es' = List.rev (List.map (expr builder scope funcs enums classes the_function) es) in
+      let es' = List.map (expr builder scope funcs enums classes the_function) es in
       L.build_call init (Array.of_list es') s' builder
 
 
@@ -419,11 +435,13 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
           let branch_instr = L.build_br merge_bb in
 
           let then_bb = L.append_block context "then" the_function in
-          let (then_builder, _) = List.fold_left build_stmt_in_block (L.builder_at_end context then_bb, WithParent(scope, StringMap.empty)) tblock in
+          let (then_builder, _) = List.fold_left build_stmt_in_block
+            (L.builder_at_end context then_bb, WithParent(scope, StringMap.empty)) tblock in
           let () = add_terminal then_builder branch_instr in
 
           let else_bb = L.append_block context "else" the_function in
-          let (else_builder, _) = List.fold_left build_stmt_in_block (L.builder_at_end context else_bb, WithParent(scope, StringMap.empty)) fblock in
+          let (else_builder, _) = List.fold_left build_stmt_in_block
+            (L.builder_at_end context else_bb, WithParent(scope, StringMap.empty)) fblock in
           let () = add_terminal else_builder branch_instr in
 
           let _ = L.build_cond_br c' then_bb else_bb builder in
@@ -438,11 +456,13 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
           let s' = L.build_alloca (ltype_of_typ class_structs t) s then_builder in
           let e'' = L.build_load e' s then_builder in
           let _ = L.build_store e'' s' then_builder in
-          let (then_builder, _) = List.fold_left build_stmt_in_block (then_builder, WithParent(scope, StringMap.add s s' StringMap.empty)) tblock in
+          let (then_builder, _) = List.fold_left build_stmt_in_block
+            (then_builder, WithParent(scope, StringMap.add s s' StringMap.empty)) tblock in
           let () = add_terminal then_builder branch_instr in
 
           let else_bb = L.append_block context "else" the_function in
-          let (else_builder, _) = List.fold_left build_stmt_in_block (L.builder_at_end context else_bb, WithParent(scope, StringMap.empty)) fblock in
+          let (else_builder, _) = List.fold_left build_stmt_in_block
+            (L.builder_at_end context else_bb, WithParent(scope, StringMap.empty)) fblock in
           let () = add_terminal else_builder branch_instr in
 
           let cond = L.build_is_not_null e' "check" builder in
@@ -453,7 +473,8 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
           let _ = L.build_br pred_bb builder in
 
           let body_bb = L.append_block context "while_body" the_function in
-          let (while_builder, _) = List.fold_left build_stmt_in_block (L.builder_at_end context body_bb, WithParent(scope, StringMap.empty)) body in
+          let (while_builder, _) = List.fold_left build_stmt_in_block
+            (L.builder_at_end context body_bb, WithParent(scope, StringMap.empty)) body in
           let () = add_terminal while_builder (L.build_br pred_bb) in
 
           let pred_builder = L.builder_at_end context pred_bb in
@@ -464,7 +485,8 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
           (L.builder_at_end context merge_bb, scope)
       | SFor (s, ((t, _) as e), body) ->
           let e' = expr builder scope funcs enums classes the_function e in
-          let t' = ltype_of_typ class_structs (match t with A.Array t' -> t' | _ -> raise (Failure("Semantic check failed"))) in
+          let t' = ltype_of_typ class_structs
+            (match t with A.Array t' -> t' | _ -> raise (Failure("Semantic check failed"))) in
           let s' = L.build_alloca t' s builder in
 
           let len_gep = L.build_struct_gep e' 0 "len" builder in
@@ -485,7 +507,8 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
           let tmp_gep = L.build_gep arr [| i |] "tmp" for_builder in
           let _ = L.build_store (L.build_load tmp_gep "i" for_builder) s' for_builder in
 
-          let (for_builder, _) = List.fold_left build_stmt_in_block (for_builder, WithParent(scope, StringMap.add s s' StringMap.empty)) body in
+          let (for_builder, _) = List.fold_left build_stmt_in_block
+            (for_builder, WithParent(scope, StringMap.add s s' StringMap.empty)) body in
           let _ = L.build_store (L.build_add i (L.const_int  i32_t 1) "tmp" for_builder) count for_builder in
           let () = add_terminal for_builder (L.build_br pred_bb) in
 
@@ -518,22 +541,24 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
         StringMap.add n local m 
       in
 
-      let formalScope = WithParent(scope, List.fold_left2 add_formal StringMap.empty fdecl.sparams (Array.to_list (L.params the_function))) in
+      let formalScope = WithParent(scope, List.fold_left2 add_formal StringMap.empty fdecl.sparams
+        (Array.to_list (L.params the_function))) in
 
-      let (fbuilder, _) = List.fold_left (fun (b, s) st -> stmt b s funcs' enums classes the_function st) (fbuilder, WithParent(formalScope, StringMap.empty)) fdecl.sbody in
+      let (fbuilder, _) = List.fold_left (fun (b, s) st -> stmt b s funcs' enums classes the_function st)
+        (fbuilder, WithParent(formalScope, StringMap.empty)) fdecl.sbody in
       let _ =
         add_terminal fbuilder (match fdecl.sty with
           A.Float -> L.build_ret (L.const_float float_t 0.0)
         | A.String -> L.build_ret (L.build_global_stringptr "" "ret" fbuilder)
-        | A.Array t -> L.build_ret (L.build_array_alloca (ltype_of_typ class_structs t) (L.const_int i32_t 0) "ret" fbuilder)
         | A.Optional t -> L.build_ret (L.const_null (L.pointer_type (ltype_of_typ class_structs t)))
-        | t -> L.build_ret (L.const_int (ltype_of_typ class_structs t) 0)) in
+        | t -> L.build_ret (L.const_null (ltype_of_typ class_structs t))) in
       (builder, scope, funcs', enums, classes)
   | SEnum_defn edefn ->
       let name = edefn.sename
       and cases = edefn.scases in
       let nums = List.mapi (fun i _ -> i) cases in
-      let cases' = List.fold_left2 (fun a s i -> StringMap.add s (L.const_int i32_t i) a) StringMap.empty cases nums in
+      let cases' = List.fold_left2 (fun a s i -> StringMap.add s (L.const_int i32_t i) a)
+        StringMap.empty cases nums in
 
       (builder, scope, funcs, StringMap.add name cases' enums, classes)
   | SCls_defn cdefn ->
@@ -578,7 +603,8 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
             StringMap.add n local m 
           in
 
-          let args = List.fold_left2 add_formal StringMap.empty (("self", A.UserDef cname) :: m.sparams) (Array.to_list (L.params the_function)) in
+          let args = List.fold_left2 add_formal StringMap.empty
+            (("self", A.UserDef cname) :: m.sparams) (Array.to_list (L.params the_function)) in
 
           let fieldScope =
             WithParent(scope, List.fold_left (fun map (i, n) ->
@@ -591,12 +617,12 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
 
           let formalScope = WithParent(fieldScope, args) in
 
-          let (fbuilder, _) = List.fold_left (fun (b, s) st -> stmt b s funcs' enums classes the_function st) (fbuilder, WithParent(formalScope, StringMap.empty)) m.sbody in
+          let (fbuilder, _) = List.fold_left (fun (b, s) st -> stmt b s funcs' enums classes the_function st)
+            (fbuilder, WithParent(formalScope, StringMap.empty)) m.sbody in
           let _ =
             add_terminal fbuilder (match m.sty with
               A.Float -> L.build_ret (L.const_float float_t 0.0)
             | A.String -> L.build_ret (L.build_global_stringptr "" "ret" fbuilder)
-            | A.Array t -> L.build_ret (L.build_array_alloca (ltype_of_typ class_structs t) (L.const_int i32_t 0) "ret" fbuilder)
             | A.Optional t -> L.build_ret (L.const_null (L.pointer_type (ltype_of_typ class_structs t)))
             | t -> L.build_ret (L.const_null (ltype_of_typ class_structs t))) in
         the_function in List.map build_method methods
@@ -645,7 +671,8 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
 
           let formalScope = WithParent(selfScope, args) in
 
-          let (fbuilder, _) = List.fold_left (fun (b, s) st -> stmt b s funcs' enums classes the_function st) (fbuilder, formalScope) body in
+          let (fbuilder, _) = List.fold_left (fun (b, s) st -> stmt b s funcs enums classes the_function st)
+            (fbuilder, formalScope) body in
           let _ =
             add_terminal fbuilder (L.build_ret obj)in
           StringMap.add name the_function map
@@ -655,7 +682,12 @@ let rec expr builder scope funcs enums classes the_function ((t, e) : sexpr) = m
       
  
   in
-  let build_with_scope (builder, scope, funcs, enums, classes) d = build_defn builder scope funcs enums classes d in 
-  let (builder, _, _, _, _) = List.fold_left build_with_scope (builder, Global(StringMap.empty), StringMap.empty, StringMap.empty, StringMap.empty) defns in
+  let build_with_scope (builder, scope, funcs, enums, classes) d =
+    build_defn builder scope funcs enums classes d in 
+  let (builder, _, _, _, _) =
+    List.fold_left build_with_scope
+    (builder, Global(StringMap.empty), StringMap.empty, StringMap.empty, StringMap.empty)
+    defns
+  in
   ignore ((L.build_ret (L.const_int i32_t 0)) builder);
   the_module

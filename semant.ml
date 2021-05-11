@@ -336,6 +336,15 @@ let check defns =
       sbody = List.rev ss;
     }, funcs) in
 
+  let check_method_names ms =
+    let compare m1 m2 = compare m1.fname m2.fname in
+    let check_methods checked m =
+      match checked with
+        [] -> m :: checked
+      | m' :: _ -> if m.fname = m'.fname then raise (Failure ("Class contains duplicate methods " ^ m.fname)) else m :: checked
+    in List.fold_left check_methods [] (List.sort compare ms)
+  in
+
 
   let check_cls scope funcs enums classes c =
     let cname = c.cname in
@@ -349,6 +358,7 @@ let check defns =
     let fields' = List.map (expr scope funcs enums classes) (List.map (fun (_, _, c) -> c) fields) in
     let fields'' = List.map2 (fun (a, b) ((b', se) as e) -> if b = b' || se = SNoExpr then (a, b, e) else raise (Failure ("Bad field assign"))) binds fields' in
     let _ = check_inits_ps inits in
+    let _ = check_method_names methods in
     let methodScope = List.fold_left (fun m (n, t, _) -> StringMap.add n (t, false) m) StringMap.empty fields'' in
     let newScope = WithParent(scope, StringMap.add "self" (UserDef cname, true) methodScope) in
     let newClasses = StringMap.add cname c classes in
@@ -363,7 +373,10 @@ let check defns =
 
   let check_defn scope funcs enums classes = function
     Stmt s  -> let (s', newScope) = stmt scope funcs enums classes (check_toplevel_block_with_check stmt) s in (SStmt(s'), newScope, funcs, enums, classes)
-  | Func_defn f -> let (f', newFuncs) = check_func scope funcs enums classes check_fstmt f in (SFunc_defn f', scope, newFuncs, enums, classes)
+  | Func_defn f ->
+      let _ = if StringMap.mem f.fname funcs then raise (Failure ("Function " ^ f.fname ^ " already defined")) else () in
+      let (f', newFuncs) = check_func scope funcs enums classes check_fstmt f in
+      (SFunc_defn f', scope, newFuncs, enums, classes)
   | Enum_defn e -> let (e', newEnums) =  check_enum enums classes e in (SEnum_defn(e'), scope, funcs, newEnums, classes)
   | Cls_defn c -> let (c', newClasses) = check_cls scope funcs enums classes c in (SCls_defn(c'), scope, funcs, enums, newClasses)
   in

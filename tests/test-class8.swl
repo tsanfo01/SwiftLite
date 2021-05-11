@@ -15,16 +15,21 @@ class Fraction {
     var den : Int;
 
     init(num : Int, den : Int) {
-        self.num = num;
-        self.den = den;
+        if den < 0 {
+            self.den = -den;
+            self.num = -num;
+        } else {
+            self.num = num;
+            self.den = den;
+        }
     }
 
-    func setNum(num : Int) -> Int {
-        self.num = num;
+    func setNum(num1 : Int) -> Int {
+        num = num1;
         return 0;
     }
-    func setDen(den : Int) -> Int {
-        self.den = den;
+    func setDen(den1 : Int) -> Int {
+        den = den1;
         return 0;
     }
 
@@ -33,6 +38,11 @@ class Fraction {
     }
     func getDen() -> Int {
         return self.den;
+    }
+
+    func negate() -> Fraction {
+        num = -num;
+        return self;
     }
 
     func reduce() -> Fraction {
@@ -47,20 +57,6 @@ class Fraction {
         return self;
     }
 
-    func add(x : Fraction) -> Fraction {
-        var numx : Int = x.getNum();
-        var denx : Int = x.getDen();
-
-        var lcd : Int = lcm(den, denx);
-
-        var tmp : Int = ((lcd / den) * num) + ((lcd / denx) * numx);
-
-        num = tmp;
-        den = lcd;
-
-        return self.reduce();
-    }
-
     func print() -> Int {
         printi(num);
         print("/");
@@ -68,21 +64,27 @@ class Fraction {
     }
 }
 
-var x : Fraction = Fraction(5, 3);
+func addFrac(x : Fraction, y : Fraction) -> Fraction {
+    var numx : Int = x.getNum();
+    var denx : Int = x.getDen();
+    var numy : Int = y.getNum();
+    var deny : Int = y.getDen();
 
+    var lcd : Int = lcm(deny, denx);
 
-x.add(Fraction(6, 3));
+    var tmp : Int = ((lcd / deny) * numy) + ((lcd / denx) * numx);
+
+    var frac : Fraction = Fraction(tmp, lcd);
+
+    return frac.reduce();
+}
+
+func subFrac(x : Fraction, y : Fraction) -> Fraction {
+    return addFrac(x, y.negate());
+}
+
+var x : Fraction = addFrac(Fraction(5, 3), Fraction(6, 3));
+var y : Fraction = subFrac(x, Fraction(1, 1));
+
 x.print();
-
-
-
-
-
-
-
-
-
-
-
-
-
+y.print();

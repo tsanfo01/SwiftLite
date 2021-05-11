@@ -1,0 +1,7 @@
+func foo() -> Int {
+    return 0;
+}
+
+func foo(x : Int) -> Int {
+    return 0;
+}

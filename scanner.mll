@@ -63,7 +63,9 @@ rule token = parse
 | "true"   { BOOLLIT(true) }
 | "false"  { BOOLLIT(false) }
 | digits as lxm { INTLIT(int_of_string lxm) }
+| ('-' digits) as lxm { INTLIT(int_of_string lxm) }
 | digits '.' digits as lxm { FLOATLIT(float_of_string lxm) }
+| ('-' digits '.' digits) as lxm { FLOATLIT(float_of_string lxm) }
 | "'" (_ as c) "'" { CHARLIT(c) }
 | '"' (strCharacter* as s) '"' { STRINGLIT(s) }
 | ['a'-'z' 'A'-'Z' ] character* as lxm { ID(lxm) }

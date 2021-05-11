@@ -70,6 +70,9 @@ compile_succ_tests = [
     "test-class5",
     "test-class6",
     "test-class7",
+    "test-class8",
+    "test-class9",
+    "test-class10",
 ]
 
 compile_fail_tests = [
@@ -94,6 +97,7 @@ compile_fail_tests = [
     "fail-func3",
     "fail-func4",
     "fail-func5",
+    "fail-func6",
     "fail-for1",
     "fail-for2",
     "fail-for3",
@@ -115,6 +119,8 @@ compile_fail_tests = [
     "fail-class6",
     "fail-class7",
     "fail-class8",
+    "fail-class9",
+    "fail-class10",
 ]
 
 command = "./toplevel.native"

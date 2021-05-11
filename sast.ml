@@ -128,7 +128,7 @@ let string_of_sdefn = function
   SStmt(s) -> string_of_sstmt s
 | SFunc_defn(f) -> string_of_sfunc f
 | SEnum_defn e -> string_of_senum e
-| SCls_defn _ -> "class\n"
+| SCls_defn c -> string_of_scls c
 
 
 let string_of_sprogram (ds, _, _) = 
