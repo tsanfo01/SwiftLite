@@ -1,0 +1,13 @@
+enum a {
+    case a;
+    case b;
+}
+
+enum b {
+    case a;
+    case b;
+}
+
+if a.a == b.a {
+    print("bad");
+}

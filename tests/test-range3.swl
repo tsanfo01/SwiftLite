@@ -1,0 +1,8 @@
+func foo(x : Int) -> Int {
+    return x;
+}
+
+
+for x in foo(1)...foo(10) {
+    printi(x);
+}

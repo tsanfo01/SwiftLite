@@ -83,8 +83,8 @@ assign_opt:
   | ASSIGN expr   { $2     }
 
 init_list:
-    INIT LPAREN args_opt RPAREN LBRACE stmt_list RBRACE           { [(List.rev $3, $6)]     }
-  | init_list INIT LPAREN args_opt RPAREN LBRACE stmt_list RBRACE { (List.rev $4, $7)::$1 }
+    INIT LPAREN args_opt RPAREN LBRACE stmt_list RBRACE           { [(List.rev $3, List.rev $6)]     }
+  | init_list INIT LPAREN args_opt RPAREN LBRACE stmt_list RBRACE { (List.rev $4, List.rev $7)::$1 }
 
 methods_opt:
     /* nothing */ { [] }

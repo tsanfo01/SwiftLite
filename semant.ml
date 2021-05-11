@@ -321,7 +321,7 @@ let check defns =
   let check_init scope funcs enums classes c (binds, i) =
     let newScope = WithParent(scope, List.fold_left (fun m (s, t) -> StringMap.add s (t, false) m) StringMap.empty binds) in
     let (i', _) = (check_function_block_with_check (check_fstmt (UserDef c))) newScope funcs enums classes i in
-    (binds, i')
+    (binds, List.rev i')
   in
 
   let check_method scope funcs enums classes check_stmt f =
