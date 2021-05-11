@@ -1,0 +1,19 @@
+func foo(x : Int, y : Bool, z : String) -> Int {
+    printi(x);
+    printb(y);
+    print(z);
+    return 0;
+}
+
+class c {
+    init() {
+        foo(3, true, "hello");
+    }
+    func foo(x : Int) -> Int{
+        return print("world");
+    }
+}
+
+var x : c = c();
+foo(2, false, "hello");
+x.foo(1);

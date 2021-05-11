@@ -1,0 +1,84 @@
+class node {
+    var x : Int;
+    var next : node? = nil : node;
+    init(i : Int) {
+        x = i;
+    }
+
+    func setNext(n : node?) -> node? {
+        next = n;
+        return next;
+    }
+
+    func getX() -> Int {
+        return x;
+    }
+
+    func getNext() -> node? {
+        return next;
+    }
+}
+
+class LL {
+    var head : node? = nil : node;
+    init() {}
+
+    func insert(x : Int) -> LL {
+        var new : node = node(x);
+        new.setNext(head);
+        head = (new)?;
+        return self;
+    }
+
+    func remove(x : Int) -> Int {
+        var curr : node? = head;
+        var prev : node? = nil : node;
+        var done : Bool = false;
+
+        while !done {
+            if let n : node = curr {
+                var y : Int = n.getX();
+                if x == y {
+                    if let n2 : node = prev {
+                        n2.setNext(n.getNext());
+                    } else {
+                        head = nil : node;
+                    }
+                    done = true;
+                }
+                prev = curr;
+                curr = n.getNext();
+            } else {
+                done = true;
+            }
+        }
+        return x;
+    }
+
+    func print() -> Int {
+        var curr : node? = head;
+        var done : Bool = false;
+
+        while !done {
+            if let x : node = curr {
+                printi(x.getX());
+                curr = x.getNext();
+            } else {
+                done = true;
+            }
+        }
+        return 0;
+    }
+}
+
+var x : LL = LL();
+x.insert(5);
+x.insert(6);
+x.insert(7);
+
+
+x.remove(6);
+x.insert(6);
+
+x.print();
+

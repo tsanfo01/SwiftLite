@@ -1,0 +1,8 @@
+class c {
+    init() {}
+
+    func foo() -> Int {
+        return foo();
+    }
+}
+
