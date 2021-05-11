@@ -74,6 +74,7 @@ rule token = parse
 
 and inlineComment = parse
   '\n' { token lexbuf }
+| eof  { EOF }
 | _    { inlineComment lexbuf }
 
 and blockComment = parse
