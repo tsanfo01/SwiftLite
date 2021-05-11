@@ -1,0 +1,1 @@
+Fatal error: exception Failure("illegal binary operator a == b in a.a == b.a")

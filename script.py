@@ -60,6 +60,7 @@ compile_succ_tests = [
     "test-concat5",
     "test-range1",
     "test-range2",
+    "test-range3",
     "test-enum1",
     "test-enum2",
     "test-enum3",
@@ -73,6 +74,7 @@ compile_succ_tests = [
     "test-class8",
     "test-class9",
     "test-class10",
+    "test-class11",
 ]
 
 compile_fail_tests = [
@@ -111,6 +113,7 @@ compile_fail_tests = [
     "fail-enum3",
     "fail-enum4",
     "fail-enum5",
+    "fail-enum6",
     "fail-class1",
     "fail-class2",
     "fail-class3",
@@ -121,6 +124,10 @@ compile_fail_tests = [
     "fail-class8",
     "fail-class9",
     "fail-class10",
+    "fail-class11",
+    "fail-self1",
+    "fail-self2",
+    "fail-self3",
 ]
 
 command = "./toplevel.native"

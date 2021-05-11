@@ -14,6 +14,7 @@ class c {
 
 var x : c = c();
 x.foobar();
-x.bar();
 var y : c = x.foo();
+x.bar();
 y.foobar();
+x.foobar();
